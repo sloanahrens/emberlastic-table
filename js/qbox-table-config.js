@@ -52,7 +52,7 @@ window.qbox_table_config = {
     <div class="row">\
       <div class="span12 search-actions">\
         <div class="pull-left">\
-          <button {{action "docListAll"}} class="btn">Find All</button>\
+          <button {{action "reset"}} class="btn">Reset</button>\
         </div>\
         <div class="pull-right">\
           {{view App.TextField valueBinding="q" placeholder="search for"}}\

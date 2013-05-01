@@ -34,13 +34,24 @@
   //////////////////////////////////////////////////////
 
 
-  // app definition ///////////////////////////
+  // app definition and params ///////////////////////////
 
   App = Ember.Application.create({
     // create ember app in the right element
      rootElement: '#ember_app_container'
     //LOG_TRANSITIONS: true
   });
+
+  App.DefaultResultSize = 20;
+
+  App.SearchParams = {
+    from: 0,
+    size: App.DefaultResultSize
+  };
+
+  App.ResultParams = {
+    totalHitCount: 0
+  };
 
   //////////////////////////////////////////////////////
 
@@ -56,36 +67,41 @@
   App.ApplicationView = Ember.View.extend({
     endpoint: config.endpoint,
     index_name: config.index_name,
-    type_name: config.type_name
+    type_name: config.type_name,
+
+    keyUp : function(e){
+      // search on input enter
+      if(e.which == 13){
+        this.get("controller").send("search");
+      }
+    }
   });
 
   App.ApplicationController = Ember.Controller.extend({
     q : "",
 
-    docListAll : function(){
-      if (Ember.ENV.DEBUG) console.debug("docListAll");
-      delete App.SearchParams.query;
+    reset : function(){
+      if (Ember.ENV.DEBUG) console.debug("App.ApplicationController.reset");
       this.set('q', '');
+      App.SearchParams = {
+        from: 0,
+        size: App.DefaultResultSize
+      };
+      App.DocumentsControllerInstance.set('sortBy', null);
+      App.DocumentsControllerInstance.set('perPage', App.DefaultResultSize);
       App.DocumentsControllerInstance.set('currentPage', 1);
     },
 
     search : function(){
       var term = this.get('q');
       if(!term) return this.docListAll();
-      if (Ember.ENV.DEBUG) console.debug("search, q: '" + term + "'");
+      if (Ember.ENV.DEBUG) console.debug("App.ApplicationController.search, q: '" + term + "'");
       App.SearchParams.query = { query_string: { query: term } };
       App.DocumentsControllerInstance.set('currentPage', 1);
-    }
+    },
+
+    
   });
-
-  App.SearchParams = {
-    from: 0,
-    size: 20
-  };
-
-  App.ResultParams = {
-    totalHitCount: 0
-  };
 
   /////////////////////////////////
 
@@ -127,7 +143,7 @@
   // Declare the route
   App.DocumentsRoute = Ember.Route.extend({
     setupController: function(controller, model) {
-      controller.set('documents.data', App.Document.find(App.SearchParams));
+      App.DocumentsControllerInstance.getData();
     }
   });
 
@@ -138,7 +154,12 @@
     documents: Ember.ArrayController.createWithMixins(VG.Mixins.Pageable, {
 
       init: function(){
+        if (Ember.ENV.DEBUG) console.debug('App.DocumentsController.init');
         App.DocumentsControllerInstance = this;
+      },
+
+      getData: function(){
+        this.set('data', App.Document.find(App.SearchParams));
       },
 
       perPage: function(key, value) {
@@ -177,7 +198,7 @@
 
       content: function () {
         return this.data;
-      }.property('currentPage', 'data'),
+      }.property('data'),
 
       totalPages: function () {
         var pages = Math.ceil(this.get('totalHitCount') / this.get('perPage'));
@@ -193,11 +214,8 @@
         // setter
         } else {
           if (Ember.ENV.DEBUG) console.debug('App.DocumentsController.currentPage; set to: ', value);
-          var newFrom = (value - 1) * this.get('perPage');
-          if(newFrom != App.ResultParams.from){
-            App.SearchParams.from = newFrom;
-            this.set('data', App.Document.find(App.SearchParams));
-          } 
+          App.SearchParams.from = (value - 1) * this.get('perPage');
+          this.getData();
           return value;
         }
       }.property(),
@@ -243,7 +261,5 @@
 
 
 }).call(this);
-
-
 
 

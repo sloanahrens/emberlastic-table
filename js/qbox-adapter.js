@@ -62,7 +62,7 @@ var get = Ember.get, set = Ember.set, merge = Ember.merge;
   }
   ```
 */
-DS.QBOXAdapter = DS.Adapter.extend({
+DS.qboxAdapter = DS.Adapter.extend({
   bulkCommit: false,
   since: 'since',
 

@@ -2,25 +2,24 @@
 
   // config ///////////////////////////
 
-  // shows some feedback from qbox-adapter
+  // shows some feedback from qbox-adapter (set to false to reduce console clutter)
   Ember.ENV.DEBUG = true;
 
   var config = window.qbox_table_config;
 
   // make sure config object exists
   if(!config) {
-    console.error('qbox_table_config object not found. qbox-table-config.js must be loaded before qbox-table.js. See qbox docs for more information.');
+    console.error('qbox_table_config object not found. qbox-table-config.js must be loaded before qbox-table.js. See https://github.com/StackSearchInc/ember-pageable-elasticsearch for more information.');
     return;
   }
 
   // a little feedback
   console.debug(
-    Handlebars.compile(
-      "qbox_table_config object found. Index name is '{{index_name}}'. Type name is '{{type_name}}'.")
-    ({
-      index_name : config.index_name, 
-      type_name : config.type_name
-    })
+    Handlebars.compile("qbox_table_config object found. Index name is '{{index_name}}'. Type name is '{{type_name}}'.")
+      ({
+        index_name : config.index_name, 
+        type_name : config.type_name
+      })
   );
 
   //////////////////////////////////////////////////////
@@ -32,30 +31,25 @@
 
   Ember.TEMPLATES['documents'] = Ember.Handlebars.compile(config.table_template);
 
-  
-
   //////////////////////////////////////////////////////
 
 
   // app definition ///////////////////////////
 
   App = Ember.Application.create({
-    // // create ember app in the right element
+    // create ember app in the right element
      rootElement: '#ember_app_container'
     //LOG_TRANSITIONS: true
   });
 
   //////////////////////////////////////////////////////
 
-    // application ///////////////////////////
+  
+  // application ///////////////////////////
 
   App.ApplicationRoute = Em.Route.extend({
     renderTemplate: function(controller, model) {
       this.render();
-      // return this.render('nav/nav', {
-      //   into: 'application',
-      //   outlet: 'nav'
-      // });
     }
   });
 
@@ -95,10 +89,9 @@
 
   /////////////////////////////////
 
-  // adapter ///////////////////////////
 
-  // QBOX Adapter
-  App.Adapter = DS.QBOXAdapter.create({
+  // qbox Adapter ///////////////////////////
+  App.Adapter = DS.qboxAdapter.create({
     url: [config.endpoint, config.index_name, config.type_name].join('/'),
     setTotalHitCount: function(totalHitCount) {
       //if (Ember.ENV.DEBUG) console.debug('App.Adapter.setTotalHitCount: ', totalHitCount);
@@ -109,11 +102,8 @@
     }
   });
 
-  //////////////////////////////////////////////////////
-
   // model ///////////////////////////
 
-  // use Ember Data
   App.Store = DS.Store.extend({
     revision: 12,
     adapter: 'App.Adapter'
@@ -121,13 +111,9 @@
 
   App.Document = DS.Model.extend(config.model_base);
 
-  //App.Document.reopenClass(config.model_extended);
-
   App.Document.reopenClass({
     url: config.type_name
   });
-
-  //////////////////////////////////////////////////////
 
 
 
@@ -147,7 +133,7 @@
 
   App.DocumentsControllerInstance = null;
 
-  // Declare the controller and instantiate the pageable ArrayController with customizations
+  // Declare the controller and instantiate the pageable ArrayController, with customizations for server-side processing
   App.DocumentsController = Ember.Controller.extend({
     documents: Ember.ArrayController.createWithMixins(VG.Mixins.Pageable, {
 
@@ -190,7 +176,6 @@
       }.property('totalHitCount'),
 
       content: function () {
-        //if (Ember.ENV.DEBUG) console.debug('App.DocumentsController.content data: ', this.get('data'));
         return this.data;
       }.property('currentPage', 'data'),
 
@@ -203,9 +188,7 @@
       currentPage: function(key, value) {
         // getter
         if (arguments.length === 1) {
-          var page = Math.floor(App.SearchParams.from / this.get('perPage')) + 1;
-          //if (Ember.ENV.DEBUG) console.debug('App.DocumentsController.currentPage: ', page);
-          return page;
+          return Math.floor(App.SearchParams.from / this.get('perPage')) + 1;
 
         // setter
         } else {
@@ -236,9 +219,7 @@
         }
 
         this.set('sortBy', property);
-
         this.set('sortDirection', direction);
-
         this.set('currentPage', 1);
       }
 
@@ -246,7 +227,7 @@
   });
 
 
-  // Declare the pagination view and set the number of pages to show to 15
+  // Declare the pagination view and set the number of pages to show to 10
   App.PaginationView = VG.Views.Pagination.extend({
     numberOfPages: 10
   });
@@ -255,17 +236,10 @@
     template: Ember.Handlebars.compile('{{#if view.isCurrent}}<i {{bindAttr class="view.isAscending:icon-chevron-up view.isDescending:icon-chevron-down"}}></i>{{/if}}{{view.text}}')
   });
 
-  // utility ///////////////////////////
-
   // this allows passing attributes through to the input element
   App.TextField = Ember.TextField.extend({
       attributeBindings: ['name']
   });
-
-  //////////////////////////////////////////////////////
-
-
-
 
 
 }).call(this);

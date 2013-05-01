@@ -14,12 +14,6 @@ window.qbox_table_config = {
     company_motto: DS.attr('string')
   },
 
-  // model_extended: {
-  //   location: function () {
-  //     return this.get('city')+', '+this.get('state');
-  //   }.property('city', 'state')
-  // },
-
   representative_document: {
     "username":"thalia.auer", 
     "first_name":"Thora", 

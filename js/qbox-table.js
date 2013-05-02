@@ -128,6 +128,7 @@
       App.DocumentsControllerInstance.set('sortBy', null);
       App.DocumentsControllerInstance.set('perPage', App.DefaultResultSize);
       App.DocumentsControllerInstance.set('currentPage', 1);
+      this.transitionToRoute('documents');
     },
 
     search : function(){

@@ -108,7 +108,7 @@ window.qbox_table_config = {
                 <td>{{doc.email}}</td>\
                 <td>{{doc.state}}</td>\
                 <td>{{doc.company}}</td>\
-                <td>{{#linkTo "document" doc}}more{{/linkTo}}</td>\
+                <td>{{#linkTo "document" doc}}show{{/linkTo}}</td>\
               </tr>\
             {{/each}}\
           </tbody>\

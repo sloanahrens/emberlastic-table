@@ -31,6 +31,8 @@
 
   Ember.TEMPLATES['documents'] = Ember.Handlebars.compile(config.table_template);
 
+  Ember.TEMPLATES['document'] = Ember.Handlebars.compile(config.details_template);
+
   //////////////////////////////////////////////////////
 
 
@@ -53,7 +55,43 @@
     totalHitCount: 0
   };
 
-  //////////////////////////////////////////////////////
+
+  // qbox Adapter ///////////////////////////
+
+  App.Adapter = DS.qboxAdapter.create({
+    url: [config.endpoint, config.index_name, config.type_name].join('/'),
+    setTotalHitCount: function(totalHitCount) {
+      //if (Ember.ENV.DEBUG) console.debug('App.Adapter.setTotalHitCount: ', totalHitCount);
+      App.ResultParams.totalHitCount = totalHitCount;
+      if(App.DocumentsControllerInstance)
+        App.DocumentsControllerInstance.set('totalHitCount', App.ResultParams.totalHitCount);
+      else if (Ember.ENV.DEBUG) console.debug('App.Adapter; App.DocumentsControllerInstance not set');
+    }
+  });
+
+
+  // model ///////////////////////////
+
+  App.Store = DS.Store.extend({
+    revision: 12,
+    adapter: 'App.Adapter'
+  });
+
+  App.Document = DS.Model.extend(config.model_base);
+
+  App.Document.reopenClass({
+    url: config.type_name
+  });
+
+
+  // routes ///////////////////////////
+
+   // Map out the routes
+  App.Router.map(function(match){
+    this.resource('documents', { path: "/" }, function() {
+      this.resource('document', { path: ':document_id' });
+    });
+  });
 
   
   // application ///////////////////////////
@@ -103,42 +141,17 @@
     
   });
 
-  /////////////////////////////////
 
+  //// document ////////////////////////
 
-  // qbox Adapter ///////////////////////////
-  App.Adapter = DS.qboxAdapter.create({
-    url: [config.endpoint, config.index_name, config.type_name].join('/'),
-    setTotalHitCount: function(totalHitCount) {
-      //if (Ember.ENV.DEBUG) console.debug('App.Adapter.setTotalHitCount: ', totalHitCount);
-      App.ResultParams.totalHitCount = totalHitCount;
-      if(App.DocumentsControllerInstance)
-        App.DocumentsControllerInstance.set('totalHitCount', App.ResultParams.totalHitCount);
-      else if (Ember.ENV.DEBUG) console.debug('App.Adapter; App.DocumentsControllerInstance not set');
+  App.DocumentController = Ember.ObjectController.extend({
+    close: function(){
+      this.transitionToRoute('documents');
     }
   });
+  
 
-  // model ///////////////////////////
-
-  App.Store = DS.Store.extend({
-    revision: 12,
-    adapter: 'App.Adapter'
-  });
-
-  App.Document = DS.Model.extend(config.model_base);
-
-  App.Document.reopenClass({
-    url: config.type_name
-  });
-
-
-
-  ////////////////////////////
-
-  // Map out the route
-  App.Router.map(function(match){
-    this.route('documents', { path: "/" });
-  });
+  // documents ///////////////////////////
 
   // Declare the route
   App.DocumentsRoute = Ember.Route.extend({
@@ -149,7 +162,8 @@
 
   App.DocumentsControllerInstance = null;
 
-  // Declare the controller and instantiate the pageable ArrayController, with customizations for server-side processing
+  // Declare the controller and instantiate the pageable ArrayController, 
+  //  with customizations for server-side processing
   App.DocumentsController = Ember.Controller.extend({
     documents: Ember.ArrayController.createWithMixins(VG.Mixins.Pageable, {
 
@@ -239,6 +253,10 @@
         this.set('sortBy', property);
         this.set('sortDirection', direction);
         this.set('currentPage', 1);
+      },
+
+      details: function(doc) {
+        if (Ember.ENV.DEBUG) console.debug('App.DocumentsController.details: ', doc);
       }
 
     })

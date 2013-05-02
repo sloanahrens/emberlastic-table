@@ -7,11 +7,19 @@ window.qbox_table_config = {
   model_base: {
     first_name: DS.attr('string'),
     last_name: DS.attr('string'),
-    company: DS.attr('string'),
     email: DS.attr('string'),
+    street_address: DS.attr('string'),
     city: DS.attr('string'),
     state: DS.attr('string'),
-    company_motto: DS.attr('string')
+    zip: DS.attr('string'),
+    phone: DS.attr('string'),
+    job_title: DS.attr('string'),
+    company: DS.attr('string'),
+    company_motto: DS.attr('string'),
+    formal_motto: function(){
+      var motto = this.get('company_motto');
+      return motto.charAt(0).toUpperCase() + motto.slice(1) + '.';
+    }.property()
   },
 
   representative_document: {
@@ -67,6 +75,7 @@ window.qbox_table_config = {
     <div class="row">\
       <div class="span12">\
         <hr>\
+        {{outlet}}\
       </div>\
     </div>\
     <div class="row">\
@@ -85,21 +94,21 @@ window.qbox_table_config = {
             <tr>\
               {{view App.TableHeaderView text="First Name" propertyName="first_name" controllerBinding="documents"}}\
               {{view App.TableHeaderView text="Last Name" propertyName="last_name" controllerBinding="documents"}}\
-              {{view App.TableHeaderView text="E-mail" propertyName="email" controllerBinding="documents"}}\
+              {{view App.TableHeaderView text="Email" propertyName="email" controllerBinding="documents"}}\
               {{view App.TableHeaderView text="State" propertyName="state" controllerBinding="documents"}}\
               {{view App.TableHeaderView text="Company" propertyName="company" controllerBinding="documents"}}\
-              {{view App.TableHeaderView text="Motto" propertyName="company_motto" controllerBinding="documents"}}\
+              <th></th>\
             </tr>\
           </thead>\
           <tbody>\
-            {{#each documents}}\
+            {{#each doc in documents}}\
               <tr>\
-                <td>{{first_name}}</td>\
-                <td>{{last_name}}</td>\
-                <td>{{email}}</td>\
-                <td>{{state}}</td>\
-                <td>{{company}}</td>\
-                <td>{{company_motto}}</td>\
+                <td>{{doc.first_name}}</td>\
+                <td>{{doc.last_name}}</td>\
+                <td>{{doc.email}}</td>\
+                <td>{{doc.state}}</td>\
+                <td>{{doc.company}}</td>\
+                <td>{{#linkTo "document" doc}}more{{/linkTo}}</td>\
               </tr>\
             {{/each}}\
           </tbody>\
@@ -110,5 +119,35 @@ window.qbox_table_config = {
       {{view App.PaginationView controllerBinding="documents" classNames="span12"}}\
     </div>\
   ',
+
+  details_template: '\
+    <div class=" hero-unit less-pad">\
+      <div class="row">\
+        <div class="pull-left">\
+          <div class="span3">\
+            <div><strong>{{first_name}} {{last_name}}</strong></div>\
+            <div>{{street_address}}</div>\
+            <div>{{city}}, {{state}}</div>\
+            <div>{{zip}}</div>\
+          </div>\
+          <div class="span4">\
+            <div><strong>{{job_title}}</strong></div>\
+            <div><strong>Company: </strong>{{company}}</div>\
+            <div><strong>Phone: </strong>{{phone}}</div>\
+            <div><strong>Email: </strong>{{email}}</div>\
+          </div>\
+          <div class="span4">\
+            <div><strong>Motto: </strong></div>\
+            <h4>{{formal_motto}}</h4>\
+          </div>\
+        </div>\
+        <div class="pull-right">\
+          <button {{action "close"}} class="btn btn-small pull-right" title="Close">\
+          <large>&times</large>\
+          </button>\
+        </div>\
+      </div>\
+    </div>\
+  '
 
 };

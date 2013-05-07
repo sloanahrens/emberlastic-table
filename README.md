@@ -15,7 +15,7 @@
 - Ember Pageable, from [VisualGuruz](https://github.com/VisualGuruz/emberjs-pageable)
 - qbox-adapter.js - this makes Ember Data talk to Elasticsearch; it was modified from the Ember Data REST adapter
 - qbox-table-config.js - this is where all the configuration data is stored; modify this to use your index data
-- qbox-table.js - the core code
+- qbox-table.js - the core code that sets up the Ember application
 
 
 ### To use as-is
@@ -117,6 +117,8 @@ and
 ```
 
 will no longer be relevant if your data does not have a field called `first_name`, and so on.
+
+All the magic happens in `qbox-table.js`. Next we'll dig into how it works. Stay tuned. :)
 
 ### Coming soon
 

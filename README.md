@@ -1,6 +1,6 @@
-### qbox.io pageable table demo
+### Qbox.io pageable table demo
 
-- This demo uses a [qbox.io](http://qbox.io) search index populated with a million records. ([live](http://qbox.io/demos/table))
+- This demo uses a [Qbox.io](http://qbox.io) search index populated with a million records. [see it [live](http://qbox.io/demos/table)]
 - Pagination, sorting and searching are all performed server-side by [Elasticsearch](http://www.elasticsearch.org).
 - The UI is constructed with [Ember.js](http://emberjs.com) and [Bootstrap](http://twitter.github.io/bootstrap).
 - Some of the code was adapted from this [project](https://github.com/VisualGuruz/emberjs-pageable).
@@ -19,7 +19,7 @@
 
 
 ### To use as-is
-- just clone this repository and open index.html
+- Just clone this repository and open index.html. :)
 
 ### To use with your elasticsearch endpoint
 Open qbox-table-config.js and look at the first few lines: 
@@ -37,7 +37,7 @@ window.qbox_table_config = {
 ```
 Replace these details with your endpoint, index name and type name to form the base search URL for your elasticsearch index.
 
-The 'representative_document' is there simply to show how the 'model_base' object was constructed. 
+The `representative_document` is there simply to show how the `model_base` object was constructed. 
 
 ```javascript
 window.qbox_table_config = {
@@ -70,9 +70,9 @@ window.qbox_table_config = {
 }
 ```
 
-'representative_document' is not used in the code anywhere and can be safely discarded, or replaced with a representative document from your data for reference.
+`representative_document` is not used in the code anywhere and can be safely discarded, or replaced with a representative document from your data for reference.
 
-'model_base' is used by Ember to construct the model. 
+`model_base` is used by Ember to construct the model. 
 
 ```javascript
 window.qbox_table_config = {
@@ -102,10 +102,23 @@ window.qbox_table_config = {
 .
 }
 ```
-Modify this object to reflect the structure of the documents in your index (perhaps by using your own 'representative_document').
+Modify this object to reflect the structure of the documents in your index (perhaps by using your own `representative_document`).
 
+After you modify the index and `model_base` you will need to modify the templates to reflect your data structure. For example, in `table_template`, 
+
+```javascript
+{{view App.TableHeaderView text="First Name" propertyName="first_name" controllerBinding="documents"}}\
+```
+
+and
+
+```javascript
+<td>{{doc.first_name}}</td>\
+```
+
+will no longer be relevant if your data does not have a field called `first_name`, and so on.
 
 ### Coming soon
 
-- Documentation/Tutorial
+- further documentation
 - Faceting

@@ -1,27 +1,11 @@
 
 window.qbox_table_config = {
+  // replace the next three lines with the information for your elasticsearch endpoint:
   endpoint: 'http://api.qbox.io/mqlewrfa',
   index_name: 'people',
   type_name : 'person',
 
-  model_base: {
-    first_name: DS.attr('string'),
-    last_name: DS.attr('string'),
-    email: DS.attr('string'),
-    street_address: DS.attr('string'),
-    city: DS.attr('string'),
-    state: DS.attr('string'),
-    zip: DS.attr('string'),
-    phone: DS.attr('string'),
-    job_title: DS.attr('string'),
-    company: DS.attr('string'),
-    company_motto: DS.attr('string'),
-    formal_motto: function(){
-      var motto = this.get('company_motto');
-      return motto.charAt(0).toUpperCase() + motto.slice(1) + '.';
-    }.property()
-  },
-
+  // this object is only here as a reference, and was used to construct the model_base below
   representative_document: {
     "username":"thalia.auer", 
     "first_name":"Thora", 
@@ -42,6 +26,27 @@ window.qbox_table_config = {
     "longitude":"-60.05041137975341"
   },
 
+  // replace the properties of this object with the relevant details for your index
+  model_base: {
+    first_name: DS.attr('string'),
+    last_name: DS.attr('string'),
+    email: DS.attr('string'),
+    street_address: DS.attr('string'),
+    city: DS.attr('string'),
+    state: DS.attr('string'),
+    zip: DS.attr('string'),
+    phone: DS.attr('string'),
+    job_title: DS.attr('string'),
+    company: DS.attr('string'),
+    company_motto: DS.attr('string'),
+    formal_motto: function(){
+      var motto = this.get('company_motto');
+      return motto.charAt(0).toUpperCase() + motto.slice(1) + '.';
+    }.property()
+  },
+
+  // The template used for the Ember application.
+  // Customize as needed.
   app_template : '\
     <div class="row">\
       <div class="span12">\
@@ -71,6 +76,8 @@ window.qbox_table_config = {
     {{outlet}}\
   ',
 
+  // Template for the pageable table rendered in the app_template {{outlet}}.
+  // Replace the object properties with those for your data.
   table_template : '\
     <div class="row">\
       <div class="span12">\
@@ -120,6 +127,8 @@ window.qbox_table_config = {
     </div>\
   ',
 
+  // Template used for the object details. 
+  // Replace the object properties with those for your data
   details_template: '\
     <div class=" hero-unit less-pad">\
       <div class="row">\

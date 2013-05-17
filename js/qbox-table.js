@@ -1,13 +1,13 @@
-(function() {
 
-  // config ///////////////////////////
+$(function() {
 
   // shows some feedback from qbox-adapter (set to false to reduce console clutter)
   Ember.ENV.DEBUG = true;
 
   var config = window.qbox_table_config;
 
-  // make sure config object exists
+  // config ///////////////////////////
+
   if(!config) {
     console.error('qbox_table_config object not found. qbox-table-config.js must be loaded before qbox-table.js. See https://github.com/StackSearchInc/ember-pageable-elasticsearch for more information.');
     return;
@@ -22,8 +22,6 @@
       })
   );
 
-  //////////////////////////////////////////////////////
-
 
   // template integration ///////////////////////////
 
@@ -32,8 +30,6 @@
   Ember.TEMPLATES['documents'] = Ember.Handlebars.compile(config.table_template);
 
   Ember.TEMPLATES['document'] = Ember.Handlebars.compile(config.details_template);
-
-  //////////////////////////////////////////////////////
 
 
   // app definition and params ///////////////////////////
@@ -59,7 +55,7 @@
   // qbox Adapter ///////////////////////////
 
   App.Adapter = DS.qboxAdapter.create({
-    url: [config.endpoint, config.index_name, config.type_name].join('/'),
+    url: config.strict_endpoint || [config.endpoint, config.index_name, config.type_name].join('/'),
     setTotalHitCount: function(totalHitCount) {
       //if (Ember.ENV.DEBUG) console.debug('App.Adapter.setTotalHitCount: ', totalHitCount);
       App.ResultParams.totalHitCount = totalHitCount;
@@ -86,7 +82,6 @@
 
   // routes ///////////////////////////
 
-   // Map out the routes
   App.Router.map(function(match){
     this.resource('documents', { path: "/" }, function() {
       this.resource('document', { path: ':document_id' });
@@ -154,10 +149,12 @@
 
   // documents ///////////////////////////
 
-  // Declare the route
   App.DocumentsRoute = Ember.Route.extend({
     setupController: function(controller, model) {
-      App.DocumentsControllerInstance.getData();
+      if(config.default_sort_property != undefined && config.default_sort_property){
+        App.DocumentsControllerInstance.sortByProperty(config.default_sort_property, config.default_sort_direction);
+      }
+      else App.DocumentsControllerInstance.getData();
     }
   });
 
@@ -239,17 +236,17 @@
 
         if (Ember.ENV.DEBUG) console.debug('App.DocumentsController.sortByProperty: ', property, direction);
 
-        if (direction === undefined) {
-          App.SearchParams.sort = {};
+        if (direction === undefined || !direction) {
           if (this.get('sortBy') === property && this.get('sortDirection') === 'ascending') {
             direction = 'descending';
-            App.SearchParams.sort[property + ".sortable"] = "desc";
           }
           else {
             direction = 'ascending';
-            App.SearchParams.sort[property + ".sortable"] = "asc";
           }
         }
+
+        App.SearchParams.sort = {};
+        App.SearchParams.sort[property + ".sortable"] = (direction == 'descending') ? "desc" : "asc";
 
         this.set('sortBy', property);
         this.set('sortDirection', direction);
@@ -278,7 +275,6 @@
       attributeBindings: ['name']
   });
 
-
-}).call(this);
-
+});
+//}).call(this);
 

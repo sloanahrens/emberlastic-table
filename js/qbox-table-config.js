@@ -1,7 +1,7 @@
 
 window.qbox_table_config = {
   // replace the next three lines with the information for your elasticsearch endpoint:
-  endpoint: 'http://api.qbox.io/mqlewrfa',
+  endpoint: 'http://api.qbox.io/hnbiojicnyvmqlqf',
   index_name: 'people',
   type_name : 'person',
 
@@ -56,7 +56,7 @@ window.qbox_table_config = {
           Pagination, sorting and searching are all performed server-side by <a target="_blank" href="http://www.elasticsearch.org">Elasticsearch</a>.<br>\
           The UI is constructed with <a target="_blank" href="http://emberjs.com">Ember</a> \
           and <a target="_blank" href="http://twitter.github.io/bootstrap/">Bootstrap</a> \
-          and is available on <a target="_blank" href="https://github.com/StackSearchInc/ember-pageable-elasticsearch">GitHub</a>.\
+          and is available on <a target="_blank" href="https://github.com/qboxio/emberlastic-table">GitHub</a>.\
         </div>\
         <h4>Hosted Elasticsearch Endpoint: <span class="text-warning" id="endpoint">{{view.endpoint}}/{{view.index_name}}/{{view.type_name}}</span></h4>\
         <hr>\

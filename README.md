@@ -27,7 +27,7 @@ Open qbox-table-config.js and look at the first few lines:
 ```javascript
 window.qbox_table_config = {
   // replace the next three lines with the information for your elasticsearch endpoint:
-  endpoint: 'http://api.qbox.io/mqlewrfa',
+  endpoint: 'http://api.qbox.io/hnbiojicnyvmqlqf',
   index_name: 'people',
   type_name : 'person',
 .
